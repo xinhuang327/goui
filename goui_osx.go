@@ -1,3 +1,5 @@
+// +build darwin
+
 package goui
 
 /*
@@ -5,6 +7,7 @@ package goui
 #cgo LDFLAGS: -framework Cocoa -framework WebKit -framework IOKit
 #import "goui_osx.m.txt"
 */
+
 import "C"
 
 import (
@@ -12,11 +15,11 @@ import (
 )
 
 const (
-	nsBorderlessWindowMask = 0
-	nsTitledWindowMask = 1
-	nsClosableWindowMask = 1 << 1
+	nsBorderlessWindowMask     = 0
+	nsTitledWindowMask         = 1
+	nsClosableWindowMask       = 1 << 1
 	nsMiniaturizableWindowMask = 1 << 2
-	nsReizableWindowMask = 1 << 3
+	nsReizableWindowMask       = 1 << 3
 )
 
 func osInit() {
@@ -28,25 +31,25 @@ func osOpenWindow(window *Window, url string, styleFlags int) {
 	var nsflags C.int
 
 	//	Translate goui window flags to Cocoa window flags...
-	if ( styleFlags & WindowBorderless > 0 ) {
+	if styleFlags&WindowBorderless > 0 {
 		nsflags = nsBorderlessWindowMask
 	} else {
 		nsflags = nsTitledWindowMask
-		
-		if ( styleFlags & WindowClosable > 0 ) {
+
+		if styleFlags&WindowClosable > 0 {
 			nsflags |= nsClosableWindowMask
 		}
-		
-		if ( styleFlags & WindowResizable > 0 ) {
+
+		if styleFlags&WindowResizable > 0 {
 			nsflags |= nsReizableWindowMask
 		}
-		
-		if ( styleFlags & WindowMinimizable > 0 ) {
+
+		if styleFlags&WindowMinimizable > 0 {
 			nsflags |= nsMiniaturizableWindowMask
 		}
 	}
-	
-	C.OpenWindow(C.int(window.handle), C.CString(url), nsflags, styleFlags & WindowModal > 0)
+
+	C.OpenWindow(C.int(window.handle), C.CString(url), nsflags, styleFlags&WindowModal > 0)
 }
 
 func osStop() {
@@ -82,4 +85,3 @@ func osRememberGeometry(window *Window, key string) {
 func osRunModal(window *Window) {
 	C.RunModal(C.int(window.handle))
 }
-
